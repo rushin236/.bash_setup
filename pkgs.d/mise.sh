@@ -50,7 +50,7 @@ pkg_mise() {
 
       _tool_log "Downloading mise $remote_ver_clean from GitHub"
 
-      local os arch asset url archive
+      local os arch asset url archive target_libc
       os=$(_tool_os)
       arch=$(_tool_arch)
 
@@ -58,8 +58,14 @@ pkg_mise() {
       [[ "$arch" == "amd64" || "$arch" == "x86_64" ]] && arch="x64"
       [[ "$arch" == "aarch64" ]] && arch="arm64"
 
-      # Example asset name: mise-v2024.5.17-linux-x64.tar.gz
-      asset="mise-${remote_ver}-${os}-${arch}.tar.gz"
+      # Detect Alpine using your existing _tool_os -d flag to append the musl suffix
+      target_libc=""
+      if [[ "$(_tool_os -d)" == "alpine" ]]; then
+        target_libc="-musl"
+      fi
+
+      # Example asset name: mise-v2024.5.17-linux-x64.tar.gz or mise-v2024.5.17-linux-x64-musl.tar.gz
+      asset="mise-${remote_ver}-${os}-${arch}${target_libc}.tar.gz"
       url="https://github.com/${repo}/releases/download/${remote_ver}/${asset}"
       archive="$tmp_dir/$asset"
 
