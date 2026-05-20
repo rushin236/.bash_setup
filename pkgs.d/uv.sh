@@ -10,9 +10,9 @@ pkg_uv() {
   local repo="astral-sh/uv"
   local tmp_dir="/tmp/uv_dl_$RANDOM"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

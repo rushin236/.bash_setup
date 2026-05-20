@@ -64,6 +64,7 @@ _sync_runtimes() {
 
   for runtime in "$@"; do
     case "$runtime" in
+      lua) version="${VERSION_LUA:-5.4.8}" ;;
       node) version="${VERSION_NODE:-24.15.0}" ;;
       python) version="${VERSION_PYTHON:-3.12.13}" ;;
       java) version="${VERSION_JAVA:-21.0.2}" ;;
@@ -95,7 +96,7 @@ _sync_runtimes() {
 
 _sync_languages() {
   # Batch process all defaults at once
-  _sync_runtimes python rust go java ruby node php || {
+  _sync_runtimes python lua rust go java ruby node php || {
     _tool_warn "Failed during global languages sync."
     return 1
   }
@@ -151,7 +152,7 @@ tool_sync() {
       subpkgs)
         _sync_subpkgs || return 1
         ;;
-      node | python | java | ruby | php | go | rust)
+      node | python | java | ruby | php | go | rust | lua)
         _sync_runtimes "${args[0]}" || return 1
         ;;
       *)
@@ -171,7 +172,7 @@ tool_sync() {
         _sync_usage
         return 1
         ;;
-      node | python | java | ruby | php | go | rust)
+      node | python | java | ruby | php | go | rust | lua)
         # Valid runtime, let it pass
         ;;
       *)

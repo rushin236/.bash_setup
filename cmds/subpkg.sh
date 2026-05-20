@@ -119,13 +119,13 @@ tool_sub_pkg() {
     npm)
       for pkg in "${pkgs_to_process[@]}"; do
         if [[ "$action" == "remove" ]]; then
-          if npm uninstall -g "$pkg" >/dev/null; then
+          if npm uninstall -g "$pkg" &>/dev/null; then
             _tool_log "Removed npm pkg: ${pkg}"
           else
             _tool_warn "Failed to remove npm package '$pkg'. Skipping..."
           fi
         else
-          if npm install -g "$pkg" >/dev/null; then
+          if npm install -g "$pkg" &>/dev/null; then
             _tool_log "Installed npm pkg: ${pkg}"
           else
             _tool_warn "Failed to install npm package '$pkg'. Skipping..."
@@ -137,14 +137,14 @@ tool_sub_pkg() {
     cargo)
       for pkg in "${pkgs_to_process[@]}"; do
         if [[ "$action" == "remove" ]]; then
-          if cargo uninstall "$pkg" >/dev/null; then
+          if cargo uninstall "$pkg" &>/dev/null; then
             _tool_log "Removed cargo pkg: ${pkg}"
           else
             _tool_warn "Failed to remove cargo package '$pkg'. Skipping..."
           fi
         else
           # Note: cargo install can be noisy on stderr too, you can use -q if you want it dead silent
-          if cargo install -q "$pkg" >/dev/null; then
+          if cargo install -q "$pkg" &>/dev/null; then
             _tool_log "Installed cargo pkg: ${pkg}"
           else
             _tool_warn "Failed to install cargo package '$pkg'. Skipping..."
@@ -156,13 +156,13 @@ tool_sub_pkg() {
     rustup)
       for pkg in "${pkgs_to_process[@]}"; do
         if [[ "$action" == "remove" ]]; then
-          if rustup component remove "$pkg" >/dev/null; then
+          if rustup component remove "$pkg" &>/dev/null; then
             _tool_log "Removed rustup pkg: ${pkg}"
           else
             _tool_warn "Failed to remove rustup component '$pkg'. Skipping..."
           fi
         else
-          if rustup component add "$pkg" >/dev/null; then
+          if rustup component add "$pkg" &>/dev/null; then
             _tool_log "Installed rustup pkg: ${pkg}"
           else
             _tool_warn "Failed to add rustup component '$pkg'. Skipping..."
@@ -175,13 +175,13 @@ tool_sub_pkg() {
       for pkg in "${pkgs_to_process[@]}"; do
         if [[ "$action" == "remove" ]]; then
           local base="${pkg##*/}"
-          if rm -f "$HOME/.local/share/go/bin/${base%%@*}" >/dev/null; then
+          if rm -f "$HOME/.local/share/go/bin/${base%%@*}" &>/dev/null; then
             _tool_log "Removed go pkg: ${pkg}"
           else
             _tool_warn "Failed to remove go package '$pkg'. Skipping..."
           fi
         else
-          if GOPATH="$HOME/.local/share/go" go install "$pkg" >/dev/null; then
+          if GOPATH="$HOME/.local/share/go" go install "$pkg" &>/dev/null; then
             _tool_log "Installed go pkg: ${pkg}"
           else
             _tool_warn "Failed to install go package '$pkg'. Skipping..."
@@ -193,13 +193,13 @@ tool_sub_pkg() {
     mise)
       for pkg in "${pkgs_to_process[@]}"; do
         if [[ "$action" == "remove" ]]; then
-          if mise uninstall "$pkg" >/dev/null; then
+          if mise uninstall "$pkg" &>/dev/null; then
             _tool_log "Removed mise pkg: ${pkg}"
           else
             _tool_warn "Failed to remove mise package '$pkg'. Skipping..."
           fi
         else
-          if mise use -g "$pkg" >/dev/null; then
+          if mise use -g "$pkg" &>/dev/null; then
             _tool_log "Installed mise pkg: ${pkg}"
           else
             _tool_warn "Failed to use mise package '$pkg'. Skipping..."
