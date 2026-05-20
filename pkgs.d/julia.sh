@@ -10,9 +10,9 @@ pkg_julia() {
   local repo="JuliaLang/julia"
   local tmp_dir="/tmp/julia_dl_$RANDOM"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

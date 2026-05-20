@@ -9,9 +9,9 @@ pkg_mise() {
   local repo="jdx/mise"
   local tmp_dir="/tmp/mise_dl_$RANDOM"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

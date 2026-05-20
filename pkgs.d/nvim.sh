@@ -10,9 +10,9 @@ pkg_nvim() {
   local repo="neovim/neovim"
   local tmp_dir="/tmp/nvim_dl_$RANDOM"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

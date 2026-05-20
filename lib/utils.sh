@@ -25,10 +25,17 @@ _tool_require_all() {
 }
 
 _tool_online() {
-  if curl -Is --connect-timeout 3 https://api.github.com >/dev/null; then
-    return 0
+  local url="http://clients3.google.com/generate_204"
+  local timeout=3
+
+  # Fail immediately if neither tool is available
+  _tool_require_any curl wget || return 1
+
+  if _tool_exists curl; then
+    curl -Is --connect-timeout "$timeout" "$url" >/dev/null
   else
-    return 1
+    # --spider checks if the URL is reachable without downloading anything
+    wget -q --spider --timeout="$timeout" "$url" >/dev/null 2>&1
   fi
 }
 
@@ -87,19 +94,9 @@ _tool_download() {
   _tool_require_any curl wget || return 1
 
   if _tool_exists curl; then
-    curl \
-      --fail \
-      --location \
-      --silent \
-      --show-error \
-      --retry 3 \
-      --output "$out" \
-      "$url" >/dev/null
+    curl -fsSL -o "$out" "$url"
   else
-    wget \
-      --quiet \
-      --output-document="$out" \
-      "$url" >/dev/null
+    wget -qO "$out" "$url"
   fi
 }
 
@@ -183,22 +180,19 @@ _tool_ensure_mise_config() {
     mise settings set ruby.compile false 2>/dev/null || true
   fi
 
-  # 2. Check and Set Global Environment Variables
-  if ! grep -q "^MISE_PYTHON_GITHUB_ATTESTATIONS" "$config_file" 2>/dev/null; then
+  # 2. Check and Set Custom Plugins
+  if ! mise plugin ls 2>/dev/null | grep -qx php; then
+    # _tool_log "Adding custom PHP plugin..." # Uncomment if _tool_log is defined globally
+    mise plugin install php https://github.com/verzly/mise-php#latest
+  fi
+
+  # 3. Check and Set Global Environment Variables
+  if ! grep -q "MISE_PYTHON_GITHUB_ATTESTATIONS" "$config_file" 2>/dev/null; then
     mise config set env.MISE_PYTHON_GITHUB_ATTESTATIONS false
   fi
 
-  if ! grep -q "^PHP_SKIP_DEPS" "$config_file" 2>/dev/null; then
-    mise config set env.PHP_SKIP_DEPS '"1"'
-  fi
-
-  if ! grep -q "^PHP_CONFIGURE_OPTIONS" "$config_file" 2>/dev/null; then
-    mise config set env.PHP_CONFIGURE_OPTIONS -- "--enable-bcmath --enable-calendar --enable-dba --enable-exif --enable-fpm --enable-ftp --enable-gd --enable-intl --enable-mbregex --enable-mbstring --enable-mysqlnd --enable-pcntl --enable-shmop --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --with-curl --with-mhash --with-openssl --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-zlib --without-pcre-jit --with-readline --with-gettext --with-zip"
-  fi
-
-  # 3. Check and Set Custom Plugins
-  if ! mise plugin ls 2>/dev/null | grep -qx php; then
-    _tool_log "Adding custom PHP plugin..."
-    mise plugin install php https://github.com/verzly/mise-php#latest
+  # 4. PHP Specific Plugin Variables
+  if ! grep -q "skip_deps = true" "$config_file" 2>/dev/null; then
+    mise config set env._.php.skip_deps true
   fi
 }

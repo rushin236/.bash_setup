@@ -13,9 +13,9 @@ pkg_fzf() {
   cd "$HOME" || return 1
   # ---------------------
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

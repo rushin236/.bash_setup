@@ -9,9 +9,9 @@ pkg_carapace() {
   local repo="carapace-sh/carapace-bin"
   local tmp_dir="/tmp/carapace_dl_$RANDOM"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access"
+  # fi
 
   case "$action" in
     install | update)

@@ -9,9 +9,9 @@ pkg_blesh() {
   local install_dir="$HOME/.local/"
   local repo="akinomyoga/ble.sh"
 
-  if ! _tool_online; then
-    _tool_die "No Internet access"
-  fi
+  # if ! _tool_online; then
+  #   _tool_die "No Internet access" && return 1
+  # fi
 
   case "$action" in
     install | update)
