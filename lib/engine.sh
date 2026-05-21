@@ -110,9 +110,13 @@ tool() {
 
 tool-update() {
   (
-    # 1. Check if the path exists (works for both directories and symlinks to directories)
+    # Handle the force flag
+    local force=false
+    [[ "$1" == "-f" ]] && force=true
+
+    # 1. Check if directory exists (works for dirs and symlinks)
     if [[ ! -d "$BASH_SETUP_DIR" ]]; then
-      echo "Error: '$BASH_SETUP_DIR' (directory or symlink) not found."
+      echo "Error: '$BASH_SETUP_DIR' not found."
       return 1
     fi
 
@@ -122,13 +126,32 @@ tool-update() {
       return 1
     fi
 
-    # 3. Pull the changes
-    echo "Updating $BASH_SETUP_DIR..."
-    if git -C "$BASH_SETUP_DIR" pull origin main; then
-      echo -e "\n.bash_setup is updated. Please restart your shell or source ~/.bashrc for changes to take effect."
+    # 3. Fetch latest info from remote to compare
+    echo "Checking for updates..."
+    git -C "$BASH_SETUP_DIR" fetch origin
+
+    # 4. Compare Local HEAD vs Remote Main
+    local local_hash
+    local remote_hash
+    local_hash=$(git -C "$BASH_SETUP_DIR" rev-parse HEAD)
+    remote_hash=$(git -C "$BASH_SETUP_DIR" rev-parse origin/main)
+
+    if [[ "$local_hash" == "$remote_hash" ]]; then
+      echo "Already up to date."
     else
-      echo "Error: Failed to pull updates."
-      return 1
+      echo "Update available. Updating now..."
+
+      # Perform the update
+      if [[ "$force" == true ]]; then
+        git -C "$BASH_SETUP_DIR" reset --hard origin/main
+      else
+        if ! git -C "$BASH_SETUP_DIR" pull origin main; then
+          echo "Error: Pull failed due to conflicts. Use 'tool-update -f' to force an overwrite."
+          return 1
+        fi
+      fi
+
+      echo -e "\n.bash_setup is updated. Please restart your shell or source ~/.bashrc for changes to take effect."
     fi
   )
 }
