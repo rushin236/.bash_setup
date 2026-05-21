@@ -81,14 +81,37 @@ pkg_julia() {
       fi
 
       # Construct the official Julia S3 download URL
-      url="https://julialang-s3.julialang.org/bin/${os_folder}/${arch_folder}/${major_minor}/${asset}"
-      archive="$tmp_dir/$asset"
+      # Define official mirrors (primary S3 and the nightlies/fallback S3)
+      local mirrors=(
+        "https://julialang-s3.julialang.org"
+        "https://julialangnightlies-s3.julialang.org"
+      )
+
+      local path="bin/${os_folder}/${arch_folder}/${major_minor}/${asset}"
+      local archive="$tmp_dir/$asset"
+      local download_success=0
 
       _tool_makedirs "$tmp_dir"
-      _tool_download "$url" "$archive" || {
+
+      # Try each mirror until one succeeds
+      for mirror_base in "${mirrors[@]}"; do
+        url="${mirror_base}/${path}"
+        _tool_log "Attempting download from: $mirror_base"
+
+        if _tool_download "$url" "$archive"; then
+          download_success=1
+          break
+        else
+          _tool_warn "Download failed from $mirror_base, trying next mirror..."
+        fi
+      done
+
+      # If all mirrors fail, abort and clean up
+      if [[ "$download_success" -ne 1 ]]; then
+        _tool_warn "Failed to download Julia $remote_ver_clean from all mirrors."
         rm -rf "$tmp_dir" >/dev/null
         return 1
-      }
+      fi
 
       _tool_log "Extracting and Installing Julia"
       _tool_unpack "$archive" "$tmp_dir" || {
