@@ -108,9 +108,9 @@ tool_sub_pkg() {
       _tool_warn "No packages defined for $manager."
       _tool_warn "Please add packages under the [$manager] section in: ~/.config/bash_setup/runtime_pkgs.conf"
     else
-      _tool_warn "No specific packages provided to process."
+      _tool_warn "No specific packages provided to process." && _subpkg_usage && return 0
     fi
-    _subpkg_usage || return 1
+    _subpkg_usage && return 0
   fi
 
   _tool_log "$action-ing $manager sub-packages: ${pkgs_to_process[*]}"
