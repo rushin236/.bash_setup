@@ -64,14 +64,14 @@ _sync_runtimes() {
 
   for runtime in "$@"; do
     case "$runtime" in
-      lua) version="${VERSION_LUA:-5.4.8}" ;;
-      node) version="${VERSION_NODE:-24.15.0}" ;;
-      python) version="${VERSION_PYTHON:-3.12.13}" ;;
-      java) version="${VERSION_JAVA:-21.0.2}" ;;
-      ruby) version="${VERSION_RUBY:-3.3.11}" ;;
+      lua) version="${VERSION_LUA:-5.5.2}" ;;
+      node) version="${VERSION_NODE:-24.16.0}" ;;
+      python) version="${VERSION_PYTHON:-3.14.5}" ;;
+      java) version="${VERSION_JAVA:-25.0.1}" ;;
+      ruby) version="${VERSION_RUBY:-3.4.1}" ;;
       php) version="${VERSION_PHP:-8.5.6}" ;;
-      go) version="${VERSION_GO:-1.25.10}" ;;
-      rust) version="${VERSION_RUST:-1.95.0}" ;;
+      go) version="${VERSION_GO:-1.26.3}" ;;
+      rust) version="${VERSION_RUST:-1.97.0}" ;;
       *)
         _tool_warn "Unknown runtime requested: $runtime. Skipping..."
         continue
