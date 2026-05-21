@@ -107,3 +107,28 @@ tool() {
 
   return "$status"
 }
+
+tool-update() {
+  (
+    # 1. Check if the path exists (works for both directories and symlinks to directories)
+    if [[ ! -d "$BASH_SETUP_DIR" ]]; then
+      echo "Error: '$BASH_SETUP_DIR' (directory or symlink) not found."
+      return 1
+    fi
+
+    # 2. Check if it is a git repo
+    if ! git -C "$BASH_SETUP_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      echo "Error: '$BASH_SETUP_DIR' is not a git repository."
+      return 1
+    fi
+
+    # 3. Pull the changes
+    echo "Updating $BASH_SETUP_DIR..."
+    if git -C "$BASH_SETUP_DIR" pull origin main; then
+      echo -e "\n.bash_setup is updated. Please restart your shell or source ~/.bashrc for changes to take effect."
+    else
+      echo "Error: Failed to pull updates."
+      return 1
+    fi
+  )
+}
