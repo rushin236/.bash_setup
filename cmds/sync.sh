@@ -98,7 +98,7 @@ _sync_languages() {
   # Batch process all defaults at once
   _sync_runtimes python lua rust go java ruby node php || {
     _tool_warn "Failed during global languages sync."
-    return 1
+    return 0
   }
 }
 
@@ -114,23 +114,23 @@ _sync_subpkgs() {
 
   tool_sub_pkg npm install all || {
     _tool_warn "npm sub-packages sync failed"
-    return 1
+    return 0
   }
   tool_sub_pkg cargo install all || {
     _tool_warn "cargo sub-packages sync failed"
-    return 1
+    return 0
   }
   tool_sub_pkg go install all || {
     _tool_warn "go sub-packages sync failed"
-    return 1
+    return 0
   }
   tool_sub_pkg rustup install all || {
     _tool_warn "rustup sub-packages sync failed"
-    return 1
+    return 0
   }
   tool_sub_pkg mise install all || {
     _tool_warn "mise sub-packages sync failed"
-    return 1
+    return 0
   }
 }
 
@@ -144,13 +144,13 @@ tool_sync() {
     case "${args[0]}" in
       all)
         _sync_languages || return 1
-        _sync_subpkgs || return 1
+        _sync_subpkgs || return 0
         ;;
       runtimes)
         _sync_languages || return 1
         ;;
       subpkgs)
-        _sync_subpkgs || return 1
+        _sync_subpkgs || return 0
         ;;
       node | python | java | ruby | php | go | rust | lua)
         _sync_runtimes "${args[0]}" || return 1
