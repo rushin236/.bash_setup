@@ -8,11 +8,11 @@ conda_toggle_env() {
   local deactivate_opt="[Deactivate -> System Python]"
 
   # Prefer micromamba
-  if command -v micromamba >/dev/null ; then
+  if command -v micromamba >/dev/null; then
     backend="micromamba"
     current_env="${CONDA_DEFAULT_ENV:-}"
 
-  elif command -v conda >/dev/null ; then
+  elif command -v conda >/dev/null; then
     backend="conda"
     current_env="${CONDA_DEFAULT_ENV:-}"
 
@@ -45,7 +45,7 @@ conda_toggle_env() {
   # Full deactivate
   if [[ "$selected_env" == "$deactivate_opt" ]]; then
     while [[ -n "$CONDA_DEFAULT_ENV" ]]; do
-      "$backend" deactivate >/dev/null  || break
+      "$backend" deactivate >/dev/null || break
     done
     return 0
   fi
@@ -55,7 +55,7 @@ conda_toggle_env() {
 
   # Switch envs cleanly
   if [[ -n "$current_env" ]]; then
-    "$backend" deactivate >/dev/null 
+    "$backend" deactivate >/dev/null
   fi
 
   "$backend" activate "$selected_env"
@@ -73,7 +73,33 @@ _tool_log_recent_dir() {
     tac "$file" 2>/dev/null
   } | awk '!seen[$0]++' | head -n 50 | tac >"$file.tmp"
 
-  mv "$file.tmp" "$file" >/dev/null 
+  mv "$file.tmp" "$file" >/dev/null
+}
+
+# --- PYTHON VENV ---
+venv_activate_cwd() {
+  # Already inside a Python virtual environment.
+  [[ -n "$VIRTUAL_ENV" ]] && return 0
+
+  local venv_dir=""
+
+  if [[ -f "$PWD/.venv/bin/activate" ]]; then
+    venv_dir="$PWD/.venv"
+  elif [[ -f "$PWD/venv/bin/activate" ]]; then
+    venv_dir="$PWD/venv"
+  else
+    return 1
+  fi
+
+  source "$venv_dir/bin/activate"
+}
+
+venv_deactivate() {
+  [[ -n "$VIRTUAL_ENV" ]] || return 0
+
+  command -v deactivate >/dev/null 2>&1 || return 1
+
+  deactivate
 }
 
 PROMPT_COMMAND+=("_tool_log_recent_dir")
